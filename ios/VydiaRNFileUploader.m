@@ -55,7 +55,14 @@ NSURLSession *_urlSession = nil;
 RCT_EXPORT_METHOD(getFileInfo:(NSString *)path resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
 {
     @try {
-        NSURL *fileUri = [NSURL URLWithString: path];
+        // NSURL *fileUri = [NSURL URLWithString: path];
+        NSURL *fileUri = nil;
+        if([path containsString:@"file://"]){
+            fileUri = [NSURL URLWithString: path];
+        }
+        else{
+            fileUri = [NSURL fileURLWithPath:path];
+        }
         NSString *pathWithoutProtocol = [fileUri path];
         NSString *name = [fileUri lastPathComponent];
         NSString *extension = [name pathExtension];
@@ -79,6 +86,66 @@ RCT_EXPORT_METHOD(getFileInfo:(NSString *)path resolve:(RCTPromiseResolveBlock)r
     }
     @catch (NSException *exception) {
         reject(@"RN Uploader", exception.name, nil);
+    }
+}
+
+RCT_EXPORT_METHOD(copyAssetToFile:(NSString *)assetUrl resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject){
+    @try{
+        
+        NSString *sourcePath = @"...";
+        NSString *destPath = @"...";
+        NSFileManager *fm = [NSFileManager defaultManager];
+        
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        NSString *documentsDirectory = [paths objectAtIndex:0];
+        [@"abc def ghi abc def ghi" rangeOfString:@"abc" options:NSBackwardsSearch];
+        NSString *fileName =[assetUrl substringFromIndex:[assetUrl rangeOfString:@"/" options:NSBackwardsSearch].location+1];
+        NSLog(@"string  substring %@", [assetUrl substringFromIndex:[assetUrl rangeOfString:@"/" options:NSBackwardsSearch].location]);
+        NSString *txtPath = [documentsDirectory stringByAppendingPathComponent:fileName];
+        
+        BOOL isDirectory;
+        NSError *copyError = nil;
+        
+        if ([fm fileExistsAtPath:txtPath] == NO) {
+//            NSString *resourcePath = [[NSBundle mainBundle] pathForResource:@"txtFile" ofType:@"txt"];
+            [fm copyItemAtPath:assetUrl toPath:txtPath error:&copyError];
+        }
+//        if ([fm fileExistsAtPath:txtPath] == YES) {
+//            [fm removeItemAtPath:txtPath error:&error];
+//        }
+        
+//        NSString *resourcePath = [[NSBundle mainBundle] pathForResource:@"txtFile" ofType:@"txt"];
+        [fm copyItemAtPath:assetUrl toPath:txtPath error:&copyError];
+        
+        NSError* error = nil;
+        NSData* data = [NSData dataWithContentsOfFile:assetUrl  options:0 error:&error];
+        NSLog(@"Data read from %@ with error: %@", assetUrl, error.debugDescription);
+        
+        NSURL *fileUri = [NSURL URLWithString: assetUrl];
+        NSString *pathWithoutProtocol = [fileUri path];
+        
+        
+        [fm createFileAtPath:txtPath contents:nil attributes:nil];
+        NSData *data1 = [[NSFileManager defaultManager] contentsAtPath:pathWithoutProtocol];
+        copyError = nil;
+        [data1 writeToFile:txtPath atomically:true];
+        
+       [NSData dataWithContentsOfFile:assetUrl  options:0 error:&copyError];
+        
+        if([data1 writeToFile:txtPath atomically:true]){
+            NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys: [NSURL fileURLWithPath:txtPath].path, @"path",[NSURL fileURLWithPath:txtPath].absoluteString , @"uri", nil];
+//            [NSURL fileURLWithFileSystemRepresentation:txtPath isDirectory:FALSE relativeToURL:nil];
+            resolve(params);
+        }
+        else{
+            reject(@"RN Uploader", [NSString stringWithFormat: @"first error %@ url %@ assetUrl %@", copyError.debugDescription, txtPath, assetUrl],  nil);
+        }
+        
+
+    }
+    @catch(NSException *exception){
+        
+        reject(@"RN Uploader", exception.debugDescription, nil);
     }
 }
 
@@ -204,7 +271,15 @@ RCT_EXPORT_METHOD(startUpload:(NSDictionary *)options resolve:(RCTPromiseResolve
                 return;
             }
 
-            uploadTask = [[self urlSession] uploadTaskWithRequest:request fromFile:[NSURL URLWithString: fileURI]];
+            NSURL * nsUrl = nil;
+            if([fileURI containsString:@"file://"]){
+                nsUrl = [NSURL URLWithString:fileURI];
+            }
+            else{
+                nsUrl = [NSURL fileURLWithPath:fileURI];
+            }
+
+            uploadTask = [[self urlSession] uploadTaskWithRequest:request fromFile:nsUrl];
         }
 
         uploadTask.taskDescription = customUploadId ? customUploadId : [NSString stringWithFormat:@"%i", thisUploadId];
@@ -242,7 +317,13 @@ RCT_EXPORT_METHOD(cancelUpload: (NSString *)cancelUploadId resolve:(RCTPromiseRe
     NSMutableData *httpBody = [NSMutableData data];
 
     // resolve path
-    NSURL *fileUri = [NSURL URLWithString: path];
+    NSURL *fileUri = nil;
+    if([path containsString:@"file://"]){
+        fileUri = [NSURL URLWithString: path];
+    }
+    else{
+        fileUri = [NSURL fileURLWithPath:path];
+    }
     NSString *pathWithoutProtocol = [fileUri path];
 
     NSData *data = [[NSFileManager defaultManager] contentsAtPath:pathWithoutProtocol];
