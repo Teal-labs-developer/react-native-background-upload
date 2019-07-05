@@ -57,7 +57,7 @@ RCT_EXPORT_METHOD(getFileInfo:(NSString *)path resolve:(RCTPromiseResolveBlock)r
     @try {
         // NSURL *fileUri = [NSURL URLWithString: path];
         NSURL *fileUri = nil;
-        if([path containsString:@"file://"]){
+        if([path containsString:@"://"]){
             fileUri = [NSURL URLWithString: path];
         }
         else{
@@ -272,7 +272,7 @@ RCT_EXPORT_METHOD(startUpload:(NSDictionary *)options resolve:(RCTPromiseResolve
             }
 
             NSURL * nsUrl = nil;
-            if([fileURI containsString:@"file://"]){
+            if([fileURI containsString:@"://"]){
                 nsUrl = [NSURL URLWithString:fileURI];
             }
             else{
@@ -318,7 +318,7 @@ RCT_EXPORT_METHOD(cancelUpload: (NSString *)cancelUploadId resolve:(RCTPromiseRe
 
     // resolve path
     NSURL *fileUri = nil;
-    if([path containsString:@"file://"]){
+    if([path containsString:@"://"]){
         fileUri = [NSURL URLWithString: path];
     }
     else{
