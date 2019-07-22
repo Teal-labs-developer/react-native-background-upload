@@ -139,7 +139,7 @@ RCT_EXPORT_METHOD(copyAssetToFile:(NSString *)assetUrl resolve:(RCTPromiseResolv
                 resolve(params);
             }
             else{
-                reject(@"RN Uploader",@"Could not write file at destination");
+                reject(@"RN Uploader",@"Could not write file at destination", nil);
             }
             
         }
