@@ -115,7 +115,7 @@ RCT_EXPORT_METHOD(copyAssetToFile:(NSString *)assetUrl resolve:(RCTPromiseResolv
        }
         
 //        NSString *resourcePath = [[NSBundle mainBundle] pathForResource:@"txtFile" ofType:@"txt"];
-        // [fm copyItemAtPath:assetUrl toPath:txtPath error:&copyError];
+        [fm copyItemAtPath:assetUrl toPath:txtPath error:&copyError];
         
         NSError* error = nil;
         NSData* data = [NSData dataWithContentsOfFile:assetUrl  options:0 error:&error];
