@@ -110,9 +110,9 @@ RCT_EXPORT_METHOD(copyAssetToFile:(NSString *)assetUrl resolve:(RCTPromiseResolv
 //            NSString *resourcePath = [[NSBundle mainBundle] pathForResource:@"txtFile" ofType:@"txt"];
             [fm copyItemAtPath:assetUrl toPath:txtPath error:&copyError];
         }
-       if ([fm fileExistsAtPath:txtPath] == YES) {
-           [fm removeItemAtPath:txtPath error:&copyError];
-       }
+//        if ([fm fileExistsAtPath:txtPath] == YES) {
+//            [fm removeItemAtPath:txtPath error:&error];
+//        }
         
 //        NSString *resourcePath = [[NSBundle mainBundle] pathForResource:@"txtFile" ofType:@"txt"];
         [fm copyItemAtPath:assetUrl toPath:txtPath error:&copyError];
@@ -132,16 +132,10 @@ RCT_EXPORT_METHOD(copyAssetToFile:(NSString *)assetUrl resolve:(RCTPromiseResolv
         
        [NSData dataWithContentsOfFile:assetUrl  options:0 error:&copyError];
         
-        if(copyError == nil){
-            if([data1 writeToFile:txtPath atomically:true]){
-                NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys: [NSURL fileURLWithPath:txtPath].path, @"path",[NSURL fileURLWithPath:txtPath].absoluteString , @"uri", nil];
+        if([data1 writeToFile:txtPath atomically:true]){
+            NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys: [NSURL fileURLWithPath:txtPath].path, @"path",[NSURL fileURLWithPath:txtPath].absoluteString , @"uri", nil];
 //            [NSURL fileURLWithFileSystemRepresentation:txtPath isDirectory:FALSE relativeToURL:nil];
-                resolve(params);
-            }
-            else{
-                reject(@"RN Uploader",@"Could not write file at destination", nil);
-            }
-            
+            resolve(params);
         }
         else{
             reject(@"RN Uploader", [NSString stringWithFormat: @"first error %@ url %@ assetUrl %@", copyError.debugDescription, txtPath, assetUrl],  nil);
