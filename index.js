@@ -63,6 +63,18 @@ export const copyAssetToFile = (assetUrl: string): Promise<Object> => {
   return NativeModule.copyAssetToFile(assetUrl);
 };
 
+export const isLocallyAvailable = (assetUrl: string): Promise<boolean> => {
+  return NativeModule.isLocallyAvailable(assetUrl);
+};
+
+export const downloadIcloudFile = (options: Object): Promise<boolean> => {
+  return NativeModule.downloadIcloudFile(options);
+};
+
+export const cancelDownload = downloadId => {
+  return NativeModule.cancelDownload(downloadId);
+};
+
 /*
 Starts uploading a file to an HTTP endpoint.  
 Options object:
@@ -123,4 +135,14 @@ export const addListener = (
   });
 };
 
-export default { startUpload, cancelUpload, addListener, getFileInfo };
+export const removeListener = (eventType, listener) => {
+  return DeviceEventEmitter.removeListener(eventPrefix + eventType, listener);
+};
+
+export default {
+  startUpload,
+  cancelUpload,
+  addListener,
+  removeListener,
+  getFileInfo
+};
