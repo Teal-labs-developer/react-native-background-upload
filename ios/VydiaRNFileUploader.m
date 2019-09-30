@@ -456,12 +456,12 @@ RCT_EXPORT_METHOD(downloadIcloudFile: (NSDictionary *)options resolve:(RCTPromis
                 NSLog(@"downloaded %@ %@",key, value);
                 // do stuff
             }
-            if([info objectForKey:PHImageErrorKey] == nil){
+            if([info objectForKey:PHImageErrorKey] == nil && imageData != nil){
                 NSArray *resourceArray = [PHAssetResource assetResourcesForAsset:asset];
                 BOOL bIsLocallayAvailable = [[resourceArray.firstObject valueForKey:@"locallyAvailable"] boolValue];
                 [self _sendEventWithName:@"RNFileUploader-downloadCompleted" body: @{@"uploadId":uploadId, @"id":uploadId, @"completed" : @true}];
             }
-            else{
+            else if([info objectForKey:PHImageErrorKey] != nil){
                 [self _sendEventWithName:@"RNFileUploader-downloadError" body: @{@"uploadId":uploadId, @"id":uploadId}];
             }
             //            if ([info objectForKey:PHImageErrorKey] == nil
@@ -501,10 +501,8 @@ RCT_EXPORT_METHOD(downloadIcloudFile: (NSDictionary *)options resolve:(RCTPromis
             }
             if ([info objectForKey:PHImageErrorKey] == nil)
             {
-                [self _sendEventWithName:@"RNFileUploader-downloadCompleted" body: @{@"uploadId":uploadId, @"id":uploadId, @"completed" : @true}];
-                NSLog(@"downloaded resultHandler completed");
                 exportSession.outputURL = [NSURL URLWithString:uri];
-                
+                [self _sendEventWithName:@"RNFileUploader-downloadCompleted" body: @{@"uploadId":uploadId, @"id":uploadId, @"completed" : @true}];
                 
                 NSArray<PHAssetResource *> *resources = [PHAssetResource assetResourcesForAsset:asset];
                 for (PHAssetResource *resource in resources)
@@ -519,12 +517,16 @@ RCT_EXPORT_METHOD(downloadIcloudFile: (NSDictionary *)options resolve:(RCTPromis
                     {
                         NSLog(@"downloaded video:%@", uri);
                         //                        completion();
+                        NSLog(@"downloaded resultHandler completed");
                         
                     }
                 }];
             }
-            else{
+            else if([info objectForKey:PHImageErrorKey] != nil){
                 [self _sendEventWithName:@"RNFileUploader-downloadError" body: @{@"uploadId":uploadId, @"id":uploadId}];
+            }
+            else{
+                [self _sendEventWithName:@"RNFileUploader-downloadCompleted" body: @{@"uploadId":uploadId, @"id":uploadId, @"completed" : @true}];
             }
         }];
     }
