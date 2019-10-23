@@ -146,6 +146,8 @@ public class UploaderModule extends ReactContextBaseJavaModule {
           WritableMap params = Arguments.createMap();
           params.putString("id", customUploadId != null ? customUploadId : uploadInfo.getUploadId());
           params.putInt("progress", uploadInfo.getProgressPercent()); //0-100
+          params.putDouble("totalBytes", uploadInfo.getTotalBytes());
+          params.putDouble("bytesSent", uploadInfo.getUploadedBytes());
           sendEvent("progress", params);
         }
 
