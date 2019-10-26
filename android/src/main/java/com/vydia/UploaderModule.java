@@ -214,53 +214,7 @@ public class UploaderModule extends ReactContextBaseJavaModule {
 
       if (notification.getBoolean("enabled")) {
 
-        UploadNotificationConfig notificationConfig = new UploadNotificationConfig();
-
-        if (notification.hasKey("notificationChannel")){
-          notificationConfig.setNotificationChannelId(notification.getString("notificationChannel"));
-        }
-
-        if (notification.hasKey("autoClear") && notification.getBoolean("autoClear")){
-          notificationConfig.getCompleted().autoClear = true;
-        }
-
-        if (notification.hasKey("enableRingTone") && notification.getBoolean("enableRingTone")){
-          notificationConfig.setRingToneEnabled(true);
-        }
-
-        if (notification.hasKey("onCompleteTitle")) {
-          notificationConfig.getCompleted().title = notification.getString("onCompleteTitle");
-        }
-
-        if (notification.hasKey("onCompleteMessage")) {
-          notificationConfig.getCompleted().message = notification.getString("onCompleteMessage");
-        }
-
-        if (notification.hasKey("onErrorTitle")) {
-          notificationConfig.getError().title = notification.getString("onErrorTitle");
-        }
-
-        if (notification.hasKey("onErrorMessage")) {
-          notificationConfig.getError().message = notification.getString("onErrorMessage");
-        }
-
-        if (notification.hasKey("onProgressTitle")) {
-          notificationConfig.getProgress().title = notification.getString("onProgressTitle");
-        }
-
-        if (notification.hasKey("onProgressMessage")) {
-          notificationConfig.getProgress().message = notification.getString("onProgressMessage");
-        }
-
-        if (notification.hasKey("onCancelledTitle")) {
-          notificationConfig.getCancelled().title = notification.getString("onCancelledTitle");
-        }
-
-        if (notification.hasKey("onCancelledMessage")) {
-          notificationConfig.getCancelled().message = notification.getString("onCancelledMessage");
-        }
-
-        request.setNotificationConfig(notificationConfig);
+        request.setNotificationConfig(new UploadNotificationConfig());
 
       }
 
