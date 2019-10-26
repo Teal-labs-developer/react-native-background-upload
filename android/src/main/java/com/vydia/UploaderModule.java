@@ -151,22 +151,30 @@ public class UploaderModule extends ReactContextBaseJavaModule {
           sendEvent("progress", params);
         }
 
+        // @Override
+        // public void onError(Context context, UploadInfo uploadInfo, ServerResponse serverResponse, Exception exception) {
+        //   WritableMap params = Arguments.createMap();
+        //   params.putString("id", customUploadId != null ? customUploadId : uploadInfo.getUploadId());
+        //   if (serverResponse != null) {
+        //     params.putInt("responseCode", serverResponse.getHttpCode());
+        //     params.putString("responseBody", serverResponse.getBodyAsString());
+        //   }
+
+        //   // Make sure we do not try to call getMessage() on a null object
+        //   if (exception != null){
+        //     params.putString("error", exception.getMessage());
+        //   } else {
+        //     params.putString("error", "Unknown exception");
+        //   }
+
+        //   sendEvent("error", params);
+        // }
+
         @Override
-        public void onError(Context context, UploadInfo uploadInfo, ServerResponse serverResponse, Exception exception) {
+        public void onError(Context context, UploadInfo uploadInfo, Exception exception) {
           WritableMap params = Arguments.createMap();
           params.putString("id", customUploadId != null ? customUploadId : uploadInfo.getUploadId());
-          if (serverResponse != null) {
-            params.putInt("responseCode", serverResponse.getHttpCode());
-            params.putString("responseBody", serverResponse.getBodyAsString());
-          }
-
-          // Make sure we do not try to call getMessage() on a null object
-          if (exception != null){
-            params.putString("error", exception.getMessage());
-          } else {
-            params.putString("error", "Unknown exception");
-          }
-
+          params.putString("error", exception.getMessage());
           sendEvent("error", params);
         }
 
