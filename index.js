@@ -144,5 +144,6 @@ export default {
   cancelUpload,
   addListener,
   removeListener,
-  getFileInfo
+  getFileInfo,
+  eventPrefix
 };
