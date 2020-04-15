@@ -122,6 +122,44 @@ RCT_EXPORT_METHOD(getFileInfo:(NSString *)path resolve:(RCTPromiseResolveBlock)r
 
 RCT_EXPORT_METHOD(copyAssetToFile:(NSString *)assetUrl resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject){
     @try{
+        BOOL success;
+        NSError *copyError;
+        
+        NSFileManager *fm = [NSFileManager defaultManager];
+        
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        NSString *documentsDirectory = [paths objectAtIndex:0];
+        
+        NSString *fileName = [assetUrl substringFromIndex:[assetUrl rangeOfString:@"/" options:NSBackwardsSearch].location+1];
+        
+        NSString *txtPath = [documentsDirectory stringByAppendingPathComponent:fileName];
+        
+        NSString *extension = [assetUrl substringFromIndex:[assetUrl rangeOfString:@"." options:NSBackwardsSearch].location+1];
+        
+        NSString *newFileName = [[self randomStringWithLength:8] stringByAppendingString:[@"." stringByAppendingString:extension]];
+        
+        NSString *filePath = [documentsDirectory stringByAppendingPathComponent:newFileName];
+        
+        NSURL *fileUri = [NSURL URLWithString: assetUrl];
+        NSString *pathWithoutProtocol = [fileUri path];
+        
+        NSData *data1 = [[NSFileManager defaultManager] contentsAtPath:pathWithoutProtocol];
+        copyError = nil;
+        [data1 writeToFile:filePath atomically:true];
+        
+        NSLog(@"Upload copy asset library %@ ",assetUrl);
+        
+        NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys: [NSURL fileURLWithPath:filePath].path, @"path",[NSURL fileURLWithPath:filePath].absoluteString , @"uri", nil];
+        //            [NSURL fileURLWithFileSystemRepresentation:txtPath isDirectory:FALSE relativeToURL:nil];
+        resolve(params);
+    }
+    @catch(NSException *exception){
+        reject(@"RN Uploader", exception.debugDescription, nil);
+    }
+}
+
+RCT_EXPORT_METHOD(copyAssetToFile1:(NSString *)assetUrl resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject){
+    @try{
         
         NSString *sourcePath = @"...";
         NSString *destPath = @"...";
